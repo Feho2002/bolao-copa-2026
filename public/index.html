@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bolão Copa 2026</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- TELA DE LOGIN -->
+  <div id="screen-auth" class="screen">
+    <div class="auth-box">
+      <div class="logo">⚽ Bolão Copa 2026</div>
+
+      <div id="tab-login" class="auth-form">
+        <h2>Entrar</h2>
+        <input type="email" id="login-email" placeholder="E-mail" />
+        <input type="password" id="login-password" placeholder="Senha" />
+        <button onclick="login()">Entrar</button>
+        <p class="switch-link">Não tem conta? <a onclick="showRegister()">Cadastre-se</a></p>
+        <p id="login-error" class="error"></p>
+      </div>
+
+      <div id="tab-register" class="auth-form" style="display:none">
+        <h2>Criar Conta</h2>
+        <input type="text" id="reg-name" placeholder="Seu nome completo" />
+        <input type="email" id="reg-email" placeholder="E-mail" />
+        <input type="password" id="reg-password" placeholder="Senha" />
+        <button onclick="register()">Solicitar Cadastro</button>
+        <p class="switch-link">Já tem conta? <a onclick="showLogin()">Entrar</a></p>
+        <p id="reg-msg" class="msg"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA PRINCIPAL -->
+  <div id="screen-main" class="screen" style="display:none">
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-left">
+        <span class="logo-small">⚽ Bolão Copa 2026</span>
+      </div>
+      <div class="header-center">
+        <nav>
+          <button class="nav-btn active" onclick="showTab('markets')">Mercados</button>
+          <button class="nav-btn" onclick="showTab('my-orders')">Minhas Apostas</button>
+          <button class="nav-btn" onclick="showTab('history')">Histórico</button>
+          <button class="nav-btn admin-only" onclick="showTab('admin')" style="display:none">Admin</button>
+        </nav>
+      </div>
+      <div class="header-right">
+        <span class="balance-label">Saldo:</span>
+        <span id="user-balance" class="balance-value">R$ 0,00</span>
+        <span id="user-name" class="user-name"></span>
+        <button class="btn-logout" onclick="logout()">Sair</button>
+      </div>
+    </header>
+
+    <!-- ABA: MERCADOS -->
+    <div id="tab-markets" class="tab-content">
+      <div class="tab-header">
+        <h2>Mercados Abertos</h2>
+        <button class="btn-primary mm-only" onclick="openNewMarketModal()" style="display:none">+ Novo Mercado</button>
+      </div>
+
+      <div class="categories" id="categories-container"></div>
+    </div>
+
+    <!-- ABA: MINHAS APOSTAS -->
+    <div id="tab-my-orders" class="tab-content" style="display:none">
+      <h2>Minhas Apostas</h2>
+      <div id="my-orders-list" class="orders-list"></div>
+    </div>
+
+    <!-- ABA: HISTÓRICO -->
+    <div id="tab-history" class="tab-content" style="display:none">
+      <h2>Histórico de Transações</h2>
+      <div id="history-list" class="orders-list"></div>
+    </div>
+
+    <!-- ABA: ADMIN -->
+    <div id="tab-admin" class="tab-content" style="display:none">
+      <h2>Painel Admin</h2>
+
+      <div class="admin-section">
+        <h3>Usuários</h3>
+        <div id="admin-users-list"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL: ORDER BOOK -->
+  <div id="modal-orderbook" class="modal" style="display:none">
+    <div class="modal-box large">
+      <div class="modal-header">
+        <h3 id="ob-market-name"></h3>
+        <button class="modal-close" onclick="closeModal('modal-orderbook')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="orderbook-grid">
+          <div class="ob-col">
+            <div class="ob-col-title buy">🟢 COMPRA (Bid)</div>
+            <div id="ob-bids"></div>
+          </div>
+          <div class="ob-col">
+            <div class="ob-col-title sell">🔴 VENDA (Ask)</div>
+            <div id="ob-asks"></div>
+          </div>
+        </div>
+
+        <div class="bet-form">
+          <h4>Fazer Aposta</h4>
+          <div class="form-row">
+            <label>Opção</label>
+            <input type="text" id="bet-option" placeholder="Ex: Brasil" />
+          </div>
+          <div class="form-row">
+            <label>Tipo</label>
+            <select id="bet-type">
+              <option value="buy">Comprar (Bid)</option>
+              <option value="sell">Vender (Ask)</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Preço (%)</label>
+            <input type="number" id="bet-price" placeholder="Ex: 30" min="1" max="99" />
+          </div>
+          <div class="form-row">
+            <label>Valor (R$)</label>
+            <input type="number" id="bet-amount" placeholder="Ex: 50" min="1" />
+          </div>
+          <div class="bet-info">
+            <span>Retorno potencial: <strong id="bet-return">R$ 0,00</strong></span>
+          </div>
+          <button class="btn-primary" onclick="placeOrder()">Confirmar Aposta</button>
+          <p id="bet-error" class="error"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO MERCADO -->
+  <div id="modal-new-market" class="modal" style="display:none">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Novo Mercado</h3>
+        <button class="modal-close" onclick="closeModal('modal-new-market')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <label>Nome do Mercado</label>
+          <input type="text" id="new-market-name" placeholder="Ex: Campeão da Copa 2026" />
+        </div>
+        <div class="form-row">
+          <label>Categoria</label>
+          <select id="new-market-category">
+            <option value="champion">Campeão</option>
+            <option value="topscorer">Artilheiro</option>
+            <option value="groups">Grupos</option>
+            <option value="advance">Avanço por Fase</option>
+            <option value="matches">Jogos</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="createMarket()">Criar Mercado</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LIQUIDAR MERCADO -->
+  <div id="modal-settle" class="modal" style="display:none">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Liquidar Mercado</h3>
+        <button class="modal-close" onclick="closeModal('modal-settle')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Mercado: <strong id="settle-market-name"></strong></p>
+        <div class="form-row">
+          <label>Resultado vencedor</label>
+          <input type="text" id="settle-result" placeholder="Ex: Brasil" />
+        </div>
+        <button class="btn-danger" onclick="settleMarket()">Confirmar Liquidação</button>
+        <p class="warning">⚠️ Esta ação é irreversível!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SALDO ADMIN -->
+  <div id="modal-balance" class="modal" style="display:none">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Ajustar Saldo</h3>
+        <button class="modal-close" onclick="closeModal('modal-balance')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Usuário: <strong id="balance-user-name"></strong></p>
+        <div class="form-row">
+          <label>Valor (use negativo para descontar)</label>
+          <input type="number" id="balance-amount" placeholder="Ex: 100 ou -50" />
+        </div>
+        <div class="form-row">
+          <label>Descrição</label>
+          <input type="text" id="balance-desc" placeholder="Ex: Depósito PIX" />
+        </div>
+        <button class="btn-primary" onclick="adjustBalance()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
