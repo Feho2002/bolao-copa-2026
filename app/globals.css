@@ -1,0 +1,161 @@
+/* ============================================================
+   BOLÃO FRAM · COPA 2026 — Design system
+   Direção: "placar institucional". Verde-campo profundo + dourado troféu,
+   sobre off-white. Tipografia: display condensada para números/posições
+   (cara de tabela de classificação), corpo neutro legível.
+   ============================================================ */
+
+:root {
+  --campo:        #0b3d2e;   /* verde gramado profundo */
+  --campo-claro:  #145740;
+  --trofeu:       #c9a227;   /* dourado fosco */
+  --trofeu-claro: #e6c75a;
+  --papel:        #f6f4ee;   /* off-white */
+  --papel-card:   #ffffff;
+  --tinta:        #14201b;   /* quase preto esverdeado */
+  --tinta-suave:  #5c6b63;
+  --linha:        #e3e0d6;
+  --erro:         #b3261e;
+  --ok:           #1d7a4d;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+
+/* Faixa superior tipo placar de estádio */
+.topo {
+  background: var(--campo);
+  color: var(--papel);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 3px solid var(--trofeu);
+}
+.topo .marca {
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-size: 18px;
+}
+.topo .sub {
+  color: var(--trofeu-claro);
+  font-size: 13px;
+  margin-left: auto;
+}
+
+.container { max-width: 760px; margin: 0 auto; padding: 20px; }
+
+.abas { display: flex; gap: 6px; flex-wrap: wrap; margin: 18px 0 22px; }
+.aba {
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--linha);
+  background: var(--papel-card);
+  color: var(--tinta-suave);
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.aba.ativa {
+  background: var(--campo);
+  color: var(--papel);
+  border-color: var(--campo);
+  font-weight: 600;
+}
+
+.card {
+  background: var(--papel-card);
+  border: 1px solid var(--linha);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+
+/* Números grandes com cara de placar */
+.placar-num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+input, button, select {
+  font: inherit;
+}
+input[type="text"], input[type="password"], input[type="number"] {
+  border: 1px solid var(--linha);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--papel-card);
+  color: var(--tinta);
+  outline: none;
+}
+input:focus { border-color: var(--campo-claro); box-shadow: 0 0 0 3px rgba(20,87,64,0.12); }
+
+.btn {
+  background: var(--campo);
+  color: var(--papel);
+  border: none;
+  border-radius: 10px;
+  padding: 11px 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover { background: var(--campo-claro); }
+.btn:active { transform: scale(0.99); }
+.btn.ghost { background: transparent; color: var(--tinta-suave); border: 1px solid var(--linha); }
+
+/* Linha de ranking */
+.rk-linha {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 0; border-bottom: 1px solid var(--linha);
+}
+.rk-pos {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px;
+  background: var(--papel); color: var(--tinta-suave);
+  border: 1px solid var(--linha);
+}
+.rk-pos.ouro   { background: var(--trofeu); color: #3a2e05; border-color: var(--trofeu); }
+.rk-pos.prata  { background: #d8d8d2; color: #333; border-color: #d8d8d2; }
+.rk-pos.bronze { background: #d8a978; color: #3a2205; border-color: #d8a978; }
+.rk-nome { font-weight: 600; }
+.rk-det  { font-size: 12px; color: var(--tinta-suave); }
+.rk-pts  { margin-left: auto; font-size: 18px; }
+
+/* Jogos / palpites */
+.grupo-hdr {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--tinta-suave); margin: 18px 0 6px; font-weight: 700;
+}
+.jogo {
+  display: grid; grid-template-columns: 1fr 48px 16px 48px 1fr;
+  align-items: center; gap: 8px;
+  padding: 10px 0; border-bottom: 1px solid var(--linha);
+}
+.jogo .casa { text-align: right; }
+.jogo .x { text-align: center; color: var(--tinta-suave); }
+.jogo input { width: 48px; text-align: center; }
+
+.aviso {
+  font-size: 13px; color: var(--tinta-suave);
+  background: #fbf8ee; border: 1px solid var(--linha);
+  border-radius: 10px; padding: 10px 12px; margin-bottom: 14px;
+}
+.aviso.travado { background: #fdeceb; border-color: #f3c9c6; color: #7a221c; }
+.salvo { font-size: 13px; color: var(--ok); min-height: 18px; margin-top: 8px; }
+
+@media (max-width: 520px) {
+  .jogo { grid-template-columns: 1fr 40px 12px 40px 1fr; }
+  .jogo input { width: 40px; }
+}
